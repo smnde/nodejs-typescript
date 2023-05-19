@@ -1,0 +1,67 @@
+version: "3.9"
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: app-backend
+    container_name: app-backend
+    command: /usr/src/app/node_modules/.bin/nodemon ./src/server.js
+    volumes:
+      - ./backend:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./backend/.env
+    networks:
+      - node-network
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  db1:
+    image: mongo:6.0
+    container_name: db-app1
+    volumes:
+      - ./mongo-data/db-app1:/data/db
+      - ./rs-init.sh:/scripts/rs-init.sh
+    ports:
+      - "27017:27017"
+    command: mongod --replSet rs0 --port 27017
+    networks:
+      - node-network
+
+  db2:
+    image: mongo:6.0
+    container_name: db-app2
+    volumes:
+      - ./mongo-data/db-app2:/data/db
+    ports:
+      - "27018:27017"
+    command: mongod --replSet rs0 --port 27017
+    networks:
+      - node-network
+
+  db3:
+    image: mongo:6.0
+    container_name: db-app3
+    volumes:
+      - ./mongo-data/db-app3:/data/db
+    ports:
+      - "27019:27017"
+    command: mongod --replSet rs0 --port 27017
+    networks:
+      - node-network
+
+networks:
+  node-network:
+    driver: bridge
+
+volumes:
+  mongo-data:
+  node_modules:
+  web-root:
+    driver: local

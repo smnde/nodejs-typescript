@@ -1,0 +1,19 @@
+# dependencies
+/backend/node_modules
+
+# testing
+/backend/coverage
+/backend/tests
+
+# production
+/backend/build
+/backend/dist
+
+# misc
+/backend/DS_Store
+/backend/.package-lock.json
+
+/backend/.env
+
+# volume
+mongo-data
